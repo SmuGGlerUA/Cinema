@@ -1,0 +1,96 @@
+fun main() {
+
+    println("\nEnter the number of rows:")
+    val rows = readln().toInt()
+    println("Enter the number of seats in each row:")
+    val seatsInRow = readln().toInt()
+    val seats = rows * seatsInRow
+    val price1 = 10
+    val price2 = 8
+    val place = MutableList(rows) { MutableList(seatsInRow) { 'S' } }
+    var x = 1
+    val menu = "1. Show the seats\n2. Buy a ticket\n" +
+            "3. Statistics\n0. Exit"
+    var purchasedTickets = 0
+    var percentageOfTicketsSold = 0.00f
+    var percentageOfTicketsSoldFinal = "0"
+    var profit = 0
+    var maxProfit = 0
+
+    println(menu)
+    if (seats in 1..60) {
+        maxProfit = seats * 10
+    } else {
+        if (rows % 2 == 0) {
+            maxProfit = seats / 2 * price1 + seats / 2 * price2
+        } else {
+            maxProfit = rows / 2 * seatsInRow * price1 + (rows + 1) / 2 * seatsInRow * price2
+        }
+    }
+
+    fun showTheSeats() {
+        print("\nCinema: \n ")
+        for (n in 1..seatsInRow) {
+            print(" $n")
+        }
+        print("\n")
+        for (n in place) {
+            print("$x ")
+            println(n.joinToString(" "))
+            x++
+        }
+        println(menu)
+        x = 1
+    }
+
+    fun buyATicket() {
+        println("\nEnter a row number:")
+        val myRow = readln().toInt()
+        println("Enter a seat number in that row:")
+        val mySeatInRow = readln().toInt()
+        try {
+            if (place[myRow - 1][mySeatInRow - 1] == 'S') {
+                place[myRow - 1][mySeatInRow - 1] = 'B'
+                purchasedTickets++
+                percentageOfTicketsSold = purchasedTickets.toFloat() / seats * 100
+                if (seats in 1..60) {
+                    println("\nTicket price: $$price1")
+                    profit += price1
+                } else {
+                    if ((rows % 2 == 0 && myRow <= rows / 2) || (rows % 2 != 0 && myRow <= rows / 2)) {
+                        println("\nTicket price: $$price1")
+                        profit += price1
+                    } else {
+                        println("\nTicket price: $$price2")
+                        profit += price2
+                    }
+                }
+            } else {
+                println("That ticket has already been purchased!")
+                buyATicket()
+            }
+        } catch (e: IndexOutOfBoundsException) {
+            println("Wrong input!")
+            buyATicket()
+        }
+        println(menu)
+    }
+
+    fun statistics() {
+        percentageOfTicketsSoldFinal = "%.2f".format(percentageOfTicketsSold)
+        println("Number of purchased tickets: $purchasedTickets")
+        println("Percentage: $percentageOfTicketsSoldFinal%")
+        println("Current income: $$profit")
+        println("Total income: $$maxProfit")
+    }
+
+    while (true) {
+        val order = readln().toInt()
+        when (order) {
+            1 -> showTheSeats()
+            2 -> buyATicket()
+            3 -> statistics()
+            0 -> break
+        }
+    }
+}
